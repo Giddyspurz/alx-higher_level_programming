@@ -1,71 +1,70 @@
 #include "lists.h"
-#include <stdio.h>
+/**
+ *is_palindrome - return if a string is palindrome
+ *@s: pointer to the string
+ *
+ *Return: 1 if is palindrome
+ *        0 if is not
+ */
 
-int is_palindrome(listint_t **head)
+int is_palindrome_buffer(char *s)
 {
-  listint_t *nhead, *tort, *hare, *ptort;
-  listint_t *cut = NULL, *half, *it1, *it2;
+	char *fp;
 
-  if (!head || !*head)
-    return (1);
+	fp = final_position(s);
 
-  nhead = *head;
-  if (nhead->next != NULL)
-    {
-      for (hare = nhead, tort = nhead; hare != NULL && hare->next != NULL;
-	   ptort = tort, tort = tort->next)
-	hare = hare->next->next;
-      if (hare != NULL)
-	{
-	  cut = tort;
-	  tort = tort->next;
-	}
-      ptort->next = NULL;
-      half = tort;
-      it1 = reverse_listint(&half);
-      for (it2 = *head; it2; it1 = it1->next, it2 = it2->next)
-	{
-	  if (it2->n != it1->n)
-	    return (0);
-	}
-      if (cut == NULL)
-	ptort->next = half;
-      else
-	{
-	  ptort->next = cut;
-	  cut->next = half;
-	}
-    }
-
-  return (1);
+	return (palindrome(s, fp));
 }
 
 /**
- * reverse_listint - Reverses a linked list in pladce
- * @head: Pointer to a pointer pointing to the first item in the list
+ *final_position - returns a pointer to the final position of a string
+ *@s: pointer to the string
  *
- * Return: The new head of the reversed list
+ *Return: fp final position of the string
  */
-listint_t *reverse_listint(listint_t **head)
+
+char *final_position(char *s)
 {
-  listint_t *next = NULL, *prev = NULL;
-
-  if (!head || !*head)
-    return (NULL);
-
-  while ((*head)->next)
-    {
-      next = (*head)->next;
-
-      (*head)->next = prev;
-
-      prev = *head;
-
-      *head = next;
-    }
-
-  (*head)->next = prev;
-
-  return (*head);
+	return (*s == '\0' ? (s - 1) : final_position(s + 1));
 }
 
+/**
+ *palindrome - check if a string is palindrome or not
+ *@s: pointer to the initial position of the string
+ *@fp: pointer to the final position of the string
+ *
+ *Return: 1 if is palindrome
+ *        0 if is not
+ */
+
+int palindrome(char *s, char *fp)
+{
+	return (*s != *fp ? 0 : s == fp || s > fp ? 1 :
+		palindrome(s + 1, fp - 1));
+}
+/**
+ * is_palindrome - checks if a singly list is a palindrome
+ * @head: head of the list
+ * Return: 0 if it is not a palindrome, 1 if it is a palindrome
+ */
+int is_palindrome(listint_t **head)
+{
+	listint_t *aux;
+	char buffer[100000];
+	unsigned int i = 0, _ret = 0;
+
+	if (!head || !*head)
+		return (1);
+	if (!(*head)->next)
+		return (1);
+	aux = *head;
+	while (aux)
+	{
+		buffer[i] = aux->n + '0';
+		aux = aux->next, i++;
+	}
+	buffer[i] = '\0';
+	_ret = is_palindrome_buffer(buffer);
+
+	return (_ret);
+}
